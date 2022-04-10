@@ -1,4 +1,6 @@
 dist
 node_modules
+coverage
+
 .vscode
 .pnpm-debug.log
