@@ -6,7 +6,8 @@
   "scripts": {
     "serve": "webpack serve --config ./build/webpack.dev.conf.js --color",
     "build": "webpack --config ./build/webpack.prod.conf.js --color",
-    "test:unit": "jest"
+    "test:unit": "jest",
+    "docs:serve": "docsify serve docs --port=3001"
   },
   "keywords": [],
   "author": "",
