@@ -1,0 +1,40 @@
+# This config is equivalent to both the '.circleci/extended/orb-free.yml' and the base '.circleci/config.yml'
+version: 2.1
+
+# Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
+# See: https://circleci.com/docs/2.0/orb-intro/
+orbs:
+  node: circleci/node@5.0.2
+jobs: # a collection of steps
+  test-unit: # runs not using Workflows must have a `build` job as entry point
+    docker: # run the steps with Docker
+      - image: circleci/node:latest
+    steps:
+      - checkout
+      - run:
+          name: Check Node.js version
+          command: node -v
+      - run:
+          name: Install yarn
+          command: "curl -o- -L https://yarnpkg.com/install.sh | bash"
+      - run:
+          name: Install dependencies if needed
+          command: |
+            if [ ! -d node_modules ]; then
+              yarn install --frozen-lockfile
+            fi
+      - save_cache: # special step to save the dependency cache in case there's something new in yarn.lock
+          name: Cache dependencies
+          key: dependency-cache-{{ checksum "yarn.lock" }}
+          paths:
+            - ./node_modules
+      - run: # run tests
+          name: Test
+          command: yarn test:unit
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  main:
+    jobs:
+      - test-unit
