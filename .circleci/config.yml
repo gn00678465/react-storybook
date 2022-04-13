@@ -15,19 +15,22 @@ jobs: # a collection of steps
           name: Check Node.js version
           command: node -v
       - run:
+          name: Install yarn
+          command: "curl -o- -L https://yarnpkg.com/install.sh | bash"
+      - run:
           name: Install dependencies if needed
           command: |
             if [ ! -d node_modules ]; then
-              pnpm install --frozen-lockfile
+              yarn install --frozen-lockfile
             fi
       - save_cache: # special step to save the dependency cache in case there's something new in yarn.lock
           name: Cache dependencies
-          key: dependency-cache-{{ checksum "pnpm-lock.yaml" }}
+          key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
             - ./node_modules
       - run: # run tests
           name: Test
-          command: pnpm run test:unit
+          command: yarn test:unit
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
